@@ -4,6 +4,7 @@ import connectDB from "./utils/db.js";
 import dns from "node:dns";
 import cloudinary from "cloudinary"; 
 import cors from "cors";
+import axios from "axios";
 
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
@@ -17,6 +18,30 @@ cloudinary.v2.config({
 
 
 const app = express();
+
+
+// This is for to make the  website faster we are using the free function code to make the website faster website can reload can call the reload website in 30sec
+
+
+const url = `https://shophub-ecommerce-server-2026-1.onrender.com`;
+const interval = 30000;
+
+function reloadWebsite() {
+  axios
+    .get(url)
+    .then((response) => {
+      console.log("website reloded");
+    })
+    .catch((error) => {
+      console.error(`Error : ${error.message}`);
+    });
+}
+
+setInterval(reloadWebsite, interval);
+
+
+////      upto this for 
+
 
 
 app.use(express.json());
