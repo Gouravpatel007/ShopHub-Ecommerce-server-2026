@@ -23,21 +23,21 @@ const app = express();
 // This is for to make the  website faster we are using the free function code to make the website faster website can reload can call the reload website in 30sec
 
 
-const url = `https://shophub-ecommerce-server-2026.onrender.com`;
-const interval = 30000;
+// const url = `https://shophub-ecommerce-server-2026.onrender.com`;
+// const interval = 30000;
 
-function reloadWebsite() {
-  axios
-    .get(url)
-    .then((response) => {
-      console.log("website reloded");
-    })
-    .catch((error) => {
-      console.error(`Error : ${error.message}`);
-    });
-}
+// function reloadWebsite() {
+//   axios
+//     .get(url)
+//     .then((response) => {
+//       console.log("website reloded");
+//     })
+//     .catch((error) => {
+//       console.error(`Error : ${error.message}`);
+//     });
+// }
 
-setInterval(reloadWebsite, interval);
+// setInterval(reloadWebsite, interval);
 
 
 ////      upto this for 
