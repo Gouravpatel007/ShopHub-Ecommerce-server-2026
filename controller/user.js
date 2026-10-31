@@ -1,229 +1,81 @@
-// import { OTP } from "../models/Otp.js";
-// import { User } from "../models/User.js";
-// import sendOtp from "../utils/sendOtp.js";
-// import TryCatch from "../utils/TryCatch.js";
-// import jwt from "jsonwebtoken";
-
-// export const loginUser = TryCatch(async(req,res)=>{
-//     const {email} = req.body;
-
-    
-//     const subject = "Ecommerce APP"
-
-//     const otp = Math.floor(Math.random() * 1000000);
-
-//     const prevOtp = await OTP.findOne({
-//         email,
-//     });
-
-//     if(prevOtp){
-//         await prevOtp.deleteOne();
-//     }
-
-//     await sendOtp({email, subject, otp});
-
-//     await OTP.create({email, otp});
-
-
-//     res.json({
-//         message:"Otp send to your mail",
-//     });
-// });
-
-// export const verifyUser = TryCatch(async(req,res) =>{
-//     const {email, otp} = req.body
-
-//     const haveOtp = await OTP.findOne({
-//         email,
-//         otp,
-//     });
-
-//     if(!haveOtp) return res.status(400).json({
-//         message:"Wrong otp",
-//     });
-
-//     let user = await User.findOne({email})
-
-//     if(user){
-//         const token = jwt.sign({_id: user._id}, process.env.JWT_SEC,{
-//             expiresIn: "15d",
-//         });
-
-//         await haveOtp.deleteOne();
-
-//         res.json({
-//             message: "User LoggedIn",
-//             token,
-//             user,
-//         });
-//     }
-
-//     else{
-//         user = await User.create({
-//             email,
-//         });
-
-//         const token = jwt.sign({_id: user._id}, process.env.JWT_SEC,{
-//             expiresIn: "15d",
-//         });
-
-//         await haveOtp.deleteOne();
-
-//         res.json({
-//             message: "User LoggedIn",
-//             token,
-//             user,
-//         });
-//     }
-// });
-
-
-// export const myProfile = TryCatch(async(req,res)=>{
-//     const user = await User.findById(req.user._id)
-
-//     res.json(user);
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { OTP } from "../models/Otp.js";
 import { User } from "../models/User.js";
-import sendOtp from "../utils/sendOtp.js";
 import TryCatch from "../utils/TryCatch.js";
+import sendOtp from "../utils/sendOtp.js";
 import jwt from "jsonwebtoken";
 
-// Send OTP
 export const loginUser = TryCatch(async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({
-      message: "Email is required",
-    });
-  }
+  const subject = "Ecommerce App";
 
-  const subject = "Ecommerce APP";
+  const otp = Math.floor(Math.random() * 1000000);
 
-  const otp = Math.floor(100000 + Math.random() * 900000);
-
-  const prevOtp = await OTP.findOne({ email });
+  const prevOtp = await OTP.findOne({
+    email,
+  });
 
   if (prevOtp) {
     await prevOtp.deleteOne();
   }
 
-  await sendOtp({
-    email,
-    subject,
-    otp,
-  });
+  await sendOtp({ email, subject, otp });
 
-  await OTP.create({
-    email,
-    otp,
-  });
+  await OTP.create({ email, otp });
 
-  return res.status(200).json({
+  res.json({
     message: "Otp send to your mail",
   });
 });
 
-// Verify OTP
 export const verifyUser = TryCatch(async (req, res) => {
   const { email, otp } = req.body;
-
-  if (!email || !otp) {
-    return res.status(400).json({
-      message: "Email and OTP are required",
-    });
-  }
 
   const haveOtp = await OTP.findOne({
     email,
     otp,
   });
 
-  if (!haveOtp) {
+  if (!haveOtp)
     return res.status(400).json({
       message: "Wrong otp",
     });
-  }
-
-  if (!process.env.JWT_SEC) {
-    return res.status(500).json({
-      message: "JWT configuration missing",
-    });
-  }
 
   let user = await User.findOne({ email });
 
-  if (!user) {
-    user = await User.create({ email });
+  if (user) {
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SEC, {
+      expiresIn: "15d",
+    });
+
+    await haveOtp.deleteOne();
+
+    res.json({
+      message: "User LoggedIn",
+      token,
+      user,
+    });
+  } else {
+    user = await User.create({
+      email,
+    });
+
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SEC, {
+      expiresIn: "15d",
+    });
+
+    await haveOtp.deleteOne();
+
+    res.json({
+      message: "User LoggedIn",
+      token,
+      user,
+    });
   }
-
-  const token = jwt.sign(
-    { _id: user._id },
-    process.env.JWT_SEC,
-    { expiresIn: "15d" }
-  );
-
-  await haveOtp.deleteOne();
-
-  return res.status(200).json({
-    message: "User LoggedIn",
-    token,
-    user,
-  });
 });
 
-// Get user profile
 export const myProfile = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
 
-  if (!user) {
-    return res.status(404).json({
-      message: "User not found",
-    });
-  }
-
-  return res.status(200).json(user);
+  res.json(user);
 });

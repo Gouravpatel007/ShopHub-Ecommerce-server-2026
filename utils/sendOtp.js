@@ -1,16 +1,16 @@
-import {createTransport} from 'nodemailer';
+import { createTransport } from "nodemailer";
 
-const sendOtp = async({email,subject,otp}) => {
-    const transport = createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        auth:{
-            user: process.env.Gmail,
-            pass: process.env.Password,
-        }
-    })
-    
-    const html = `<!DOCTYPE html>
+const sendOtp = async ({ email, subject, otp }) => {
+  const transport = createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    auth: {
+      user: process.env.Gmail,
+      pass: process.env.Password,
+    },
+  });
+
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -56,14 +56,12 @@ const sendOtp = async({email,subject,otp}) => {
 </body>
 </html>`;
 
-    await transport.sendMail({
-        from: process.env.Gmail,
-        to: email,
-        subject,
-        html,
-    });
+  await transport.sendMail({
+    from: process.env.Gmail,
+    to: email,
+    subject,
+    html,
+  });
 };
 
 export default sendOtp;
-
-

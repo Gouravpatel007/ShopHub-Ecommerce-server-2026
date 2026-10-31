@@ -1,39 +1,35 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  about: {
+    type: String,
+    required: true,
+  },
+  stock: {
+    type: Number,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
 
-    title: {
-       type: String,
-       required: true,
-    },
-
-    about: {
-       type: String,
-       required: true
-    },
-
-    stock: {
-        type: Number,
-        required: true
-    },
-
-    price: {
-        type: Number,
-        required: true
-    },
-
-    images: [{
-        id: String,
-        url: String,
+  images: [
+    {
+      id: String,
+      url: String,
     },
   ],
 
-  sold:{
+  sold: {
     type: Number,
     default: 0,
   },
-
-  category:{
+  category: {
     type: String,
     required: true,
   },
@@ -44,4 +40,4 @@ const productSchema = new mongoose.Schema({
   },
 });
 
-export const Product = mongoose.model("Product",productSchema);
+export const Product = mongoose.model("Product", productSchema);

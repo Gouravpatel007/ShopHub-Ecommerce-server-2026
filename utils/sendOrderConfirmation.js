@@ -1,21 +1,27 @@
-import {createTransport} from 'nodemailer';
+import { createTransport } from "nodemailer";
 
-const sendOrderConfirmation = async({ email,subject,orderId, products, totalAmount }) => {
-    const transport = createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        auth:{
-            user: process.env.Gmail,
-            pass: process.env.Password,
-        }
-    })
-    
-    const productsHtml = products
+const sendOrderConfirmation = async ({
+  email,
+  subject,
+  orderId,
+  products,
+  totalAmount,
+}) => {
+  const transport = createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    auth: {
+      user: process.env.Gmail,
+      pass: process.env.Password,
+    },
+  });
+
+  const productsHtml = products
     .map(
       (product) => `
             <tr>
                 <td style="padding: 10px; border: 1px solid #ddd;">${product.name}</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">${product.quauntity}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${product.quantity}</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">₹${product.price}</td>
             </tr>
         `
@@ -81,7 +87,7 @@ const sendOrderConfirmation = async({ email,subject,orderId, products, totalAmou
             <thead>
                 <tr>
                     <th>Product</th>
-                    <th>quantity</th>
+                    <th>Quantity</th>
                     <th>Price</th>
                 </tr>
             </thead>
@@ -95,12 +101,12 @@ const sendOrderConfirmation = async({ email,subject,orderId, products, totalAmou
 </body>
 </html>`;
 
-    await transport.sendMail({
-        from: process.env.Gmail,
-        to: email,
-        subject,
-        html,
-    });
+  await transport.sendMail({
+    from: process.env.Gmail,
+    to: email,
+    subject,
+    html,
+  });
 };
 
 export default sendOrderConfirmation;

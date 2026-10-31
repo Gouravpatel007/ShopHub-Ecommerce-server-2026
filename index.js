@@ -104,23 +104,14 @@
 
 
 
-
-
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./utils/db.js";
+import connectDb from "./utils/db.js";
 import cloudinary from "cloudinary";
 import cors from "cors";
+import axios from "axios";
 
-import userRoutes from "./routes/user.js";
-import productRoutes from "./routes/product.js";
-import cartRoutes from "./routes/cart.js";
-import addressRoutes from "./routes/address.js";
-import orderRoutes from "./routes/order.js";
-
-dotenv.config({ quiet: true });
-
-const app = express();
+dotenv.config(); 
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -128,57 +119,28 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 
+const app = express();
+
 app.use(express.json());
+app.use(cors());
 
-app.use(
-  cors({
-    origin: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "token"],
-  })
-);
+const port = process.env.PORT;
 
-// Health check
-app.get("/", (req, res) => {
-  res.status(200).send("ShopHub API is running");
-});
+// importing routes
+import userRoutes from "./routes/user.js";
+import productRoutes from "./routes/product.js";
+import cartRoutes from "./routes/cart.js";
+import addressRoutes from "./routes/address.js";
+import orderRoutes from "./routes/order.js";
 
-// API routes
+// using routes
 app.use("/api", userRoutes);
 app.use("/api", productRoutes);
 app.use("/api", cartRoutes);
 app.use("/api", addressRoutes);
 app.use("/api", orderRoutes);
 
-// Handle unknown routes
-app.use((req, res) => {
-  res.status(404).json({
-    message: "API route not found",
-  });
+app.listen(port, () => {
+  console.log(`server is running on http://localhost:${port}`);
+  connectDb();
 });
-
-// Global error handler
-app.use((error, req, res, next) => {
-  console.error("Server Error:", error);
-
-  res.status(500).json({
-    message: "Internal server error",
-  });
-});
-
-const PORT = process.env.PORT || 5000;
-
-const startServer = async () => {
-  try {
-    await connectDB();
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Server startup failed:", error);
-    process.exit(1);
-  }
-};
-
-startServer();
