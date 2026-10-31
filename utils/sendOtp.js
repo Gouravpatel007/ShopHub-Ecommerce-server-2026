@@ -98,11 +98,19 @@
 
 
 
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { createTransport } from "nodemailer";
 
 const sendOtp = async ({ email, subject, otp }) => {
+  const transport = createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.Gmail,
+      pass: process.env.Password,
+    },
+  });
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,24 +158,20 @@ const sendOtp = async ({ email, subject, otp }) => {
 </html>`;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: "ShopHub <onboarding@resend.dev>",
-      to: [email],
+    await transport.verify();
+
+    const info = await transport.sendMail({
+      from: process.env.Gmail,
+      to: email,
       subject,
       html,
     });
 
-    if (error) {
-      console.log("Resend Error:", error);
-      throw new Error(error.message);
-    }
+    console.log("OTP email sent successfully:", info.messageId);
 
-    console.log("OTP email sent successfully:", data);
-
-    return data;
-
+    return info;
   } catch (error) {
-    console.log("Send OTP Error:", error.message);
+    console.error("OTP Email Error:", error);
     throw error;
   }
 };
