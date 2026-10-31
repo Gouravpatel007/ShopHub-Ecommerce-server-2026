@@ -1,4 +1,5 @@
-import { Cart } from "../models/cart.js";
+// import { Cart } from "../models/cart.js";
+import { Cart } from "../models/Cart.js";
 import { Product } from "../models/Product.js";
 import TryCatch from "../utils/TryCatch.js";
 
