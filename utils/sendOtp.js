@@ -92,15 +92,6 @@
 
 
 
-
-
-
-
-
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const sendOtp = async ({ email, subject, otp }) => {
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -140,20 +131,32 @@ const sendOtp = async ({ email, subject, otp }) => {
 </html>`;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: "ShopHub <onboarding@resend.dev>",
-      to: [email],
-      subject,
-      html,
-    });
+    const response = await fetch(
+      process.env.GOOGLE_APPS_SCRIPT_URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify({
+          email,
+          subject,
+          otp,
+          html,
+          secret: process.env.OTP_SCRIPT_SECRET,
+        }),
+      }
+    );
 
-    if (error) {
-      console.error("Resend Email Error:", error);
-      throw new Error(error.message);
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Failed to send OTP");
     }
 
-    console.log("OTP email sent successfully:", data.id);
-    return data;
+    console.log("OTP email sent successfully:", email);
+    return result;
+
   } catch (error) {
     console.error("OTP Email Error:", error);
     throw error;
